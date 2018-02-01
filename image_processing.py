@@ -16,13 +16,14 @@ print(image_data)
 print ('Size: ', image_data.size)
 print ('Shape: ', image_data.shape)
 scaled_image_data = image_data / 255
-#blurred_face = ndimage.gaussian_filter(scaled_image_data, sigma=3)
-#very_blurred = ndimage.gaussian_filter(scaled_image_data, sigma=5)
+blurred_face = ndimage.gaussian_filter(scaled_image_data, sigma=3)
+very_blurred = ndimage.gaussian_filter(scaled_image_data, sigma=5)
 #Save the modified image if you want to
-imsave('test_out.png', scaled_image_data)
-plt.imshow(ndimage.rotate(scaled_image_data, 45))
+
+plt.imshow(ndimage.rotate(scaled_image_data, 90))
 plt.show()
-'''
+
+
 scaled_image_data.clip(50,10)
 #Save the modified image if you want to
 
@@ -30,4 +31,4 @@ scaled_image_data.clip(50,10)
 imsave('test_out.png', scaled_image_data)
 plt.imshow(scaled_image_data[100:])
 plt.show()
-'''
+imsave('test_out.png', scaled_image_data)
