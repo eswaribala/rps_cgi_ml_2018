@@ -1,54 +1,46 @@
 # -*- coding: utf-8 -*-
 """
-Created on Sun Sep 24 00:57:47 2017
+Created on Thu Jul 20 08:32:25 2017
 
 @author: BALASUBRAMANIAM
 """
 
 import numpy as np
-from scipy.spatial.distance import cdist
-import matplotlib.pyplot as plt
-import seaborn as sns
- 
-#%pylab inline
-#sns.set()
- 
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-import pandas as pd
- 
-data = pd.read_csv("Wholesale customers data.csv")
-data.drop(["Channel", "Region"], axis = 1, inplace = True)
- 
-data = data[["Grocery", "Milk"]]
-data = data.as_matrix().astype("float32", copy = False)
- 
-stscaler = StandardScaler().fit(data)
-data = stscaler.transform(data)
- 
-plt.scatter(data[:,0], data[:,1])
-plt.xlabel("Groceries")
-plt.ylabel("Milk")
-plt.title("Wholesale Data - Groceries and Milk")
-plt.savefig("results/wholesale.png", format = "PNG")
- 
-dbsc = DBSCAN(eps = .5, min_samples = 15).fit(data)
- 
-labels = dbsc.labels_
-core_samples = np.zeros_like(labels, dtype = bool)
-core_samples[dbsc.core_sample_indices_] = True
- 
-unique_labels = np.unique(labels)
-colors = plt.cm.Spectral(np.linspace(0,1, len(unique_labels)))
- 
-for (label, color) in zip(unique_labels, colors):
-    class_member_mask = (labels == label)
-    xy = data[class_member_mask & core_samples]
-    plt.plot(xy[:,0],xy[:,1], 'o', markerfacecolor = color, markersize = 10)
-    
-    xy2 = data[class_member_mask & ~core_samples]
-    plt.plot(xy2[:,0],xy2[:,1], 'o', markerfacecolor = color, markersize = 5)
-plt.title("DBSCAN on Wholsesale data")
-plt.xlabel("Grocery (scaled)")
-plt.ylabel("Milk (scaled)")
-plt.savefig("results/dbscan_wholesale.png", format = "PNG")
+import matplotlib.pyplot as pl
+import scipy.stats as st
+
+data = np.random.multivariate_normal((0, 0), [[0.8, 0.05], [0.05, 0.7]], 100)
+print(data.shape)
+
+
+x = data[:, 0]
+y = data[:, 1]
+
+
+
+xmin, xmax = -3, 3
+ymin, ymax = -3, 3
+
+# Peform the kernel density estimate
+xx, yy = np.mgrid[xmin:xmax:100j, ymin:ymax:100j]
+#Stack arrays in sequence vertically (row wise).
+positions = np.vstack([xx.ravel(), yy.ravel()])
+values = np.vstack([x, y])
+kernel = st.gaussian_kde(values)
+f = np.reshape(kernel(positions).T, xx.shape)
+
+fig = pl.figure()
+ax = fig.gca()
+ax.set_xlim(xmin, xmax)
+ax.set_ylim(ymin, ymax)
+# Contourf plot
+#cfset = ax.contourf(xx, yy, f, cmap='Blues')
+## Or kernel density estimate plot instead of the contourf plot
+#ax.imshow(np.rot90(f), cmap='Blues', extent=[xmin, xmax, ymin, ymax])
+# Contour plot
+cset = ax.contour(xx, yy, f, colors='k')
+# Label plot
+ax.clabel(cset, inline=1, fontsize=10)
+ax.set_xlabel('Y1')
+
+pl.show()
